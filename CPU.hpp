@@ -16,8 +16,8 @@ private:
     std::uint8_t regP;          //status register  -- Negative, Overflow, ignored, Break, Decimal, Interrupt, Zero, Carry
     std::uint8_t regSP;         //stack pointer     |    7         6         5       4       3         2        1     0
     std::uint16_t regPC;        //program counter
-    std::uint8_t PRG_ROM_size;
-    std::uint8_t CHR_ROM_size;
+    std::uint16_t PRG_ROM_size;
+    std::uint16_t CHR_ROM_size;
     std::uint8_t flag6;
 public:
     CPU(){
