@@ -2,6 +2,8 @@
 #define CPU_HPP_INCLUDED
 
 #include<fstream>
+#include<iostream>
+#include<iomanip>
 
 #define MEMORY_SIZE 65535
 class CPU {
@@ -626,13 +628,15 @@ public:
         //printing memory
         std::cout<<"Memory:"<<std::endl;
         int row_counter = 0;
+        std::cout<<std::hex;
         for( ; first <= last ; first++){
-            std::cout<<(unsigned int)memory[first]<<" ";
+            std::cout<<std::setfill('0')<<std::setw(2)<<(unsigned int)memory[first]<<" ";
             row_counter++;
             if(row_counter % 16 == 0){
                 std::cout<<std::endl;
             }
         }
+        std::cout<<std::dec;
     }
 };
 
