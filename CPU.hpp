@@ -1,6 +1,8 @@
 #ifndef CPU_HPP_INCLUDED
 #define CPU_HPP_INCLUDED
 
+using namespace std;
+
 #define MEMORY_SIZE 65535
 class CPU {
 private:
@@ -154,7 +156,7 @@ public:
         }
     }
 
-    void BPL(){
+    void BPL(uint16_t adress_index){
         if(!(regP & 0b10000000)){
             regPC = adress_index;
         }
