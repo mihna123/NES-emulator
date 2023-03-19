@@ -1,6 +1,8 @@
 #ifndef CPU_HPP_INCLUDED
 #define CPU_HPP_INCLUDED
 
+#include<fstream>
+
 using namespace std;
 
 #define MEMORY_SIZE 65535
@@ -591,6 +593,25 @@ public:
         }else{
             regP = regP & 0b11111101;
         }
+    }
+
+    //loads a .nes file into memory
+    void load(string file_name){
+        fstream file;
+        char byte;
+        //begining of PRG_ROM memory
+        uint16_t program_adress = 0x4020;
+
+
+        file.open(file_name);
+
+        while(file.get(byte) && program_adress <= 0xffff){
+            memory[program_adress] = byte;
+            program_adress++;
+        }
+
+        file.close();
+
     }
 
 
