@@ -595,13 +595,10 @@ public:
 
     //loads a .nes file into memory
     void load(std::string file_name){
-        std::fstream file;
+        std::ifstream file(file_name,std::ios_base::binary);
         char byte;
         //begining of PRG_ROM memory
         std::uint16_t program_adress = 0x4020;
-
-
-        file.open(file_name);
 
         while(file.get(byte) && program_adress <= 0xffff){
             memory[program_adress] = byte;
@@ -609,7 +606,6 @@ public:
         }
 
         file.close();
-
     }
 
 
