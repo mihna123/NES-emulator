@@ -5,7 +5,8 @@
 #include<iostream>
 #include<iomanip>
 
-#define MEMORY_SIZE 65535
+#define KB 1024
+#define MEMORY_SIZE (64 * KB)
 class CPU {
 private:
     std::uint8_t memory[MEMORY_SIZE];     //ffff bytes
@@ -15,6 +16,9 @@ private:
     std::uint8_t regP;          //status register  -- Negative, Overflow, ignored, Break, Decimal, Interrupt, Zero, Carry
     std::uint8_t regSP;         //stack pointer     |    7         6         5       4       3         2        1     0
     std::uint16_t regPC;        //program counter
+    std::uint8_t PRG_ROM_size;
+    std::uint8_t CHR_ROM_size;
+    std::uint8_t flag6;
 public:
     CPU(){
         for(int i = 0 ; i < MEMORY_SIZE ; i++){
@@ -26,6 +30,9 @@ public:
         regP = 0;
         regSP = 0xff; //stack goes from 0x01ff to 0x0100, since its one byte you add 256(0x0100) for it to work
         regPC = 0;
+        PRG_ROM_size = 0;
+        CHR_ROM_size = 0;
+        flag6 = 0;
     }
 
     void ADC(std::uint16_t adress_index){
@@ -601,6 +608,24 @@ public:
         char byte;
         //begining of PRG_ROM memory
         std::uint16_t program_adress = 0x4020;
+
+        //get past unused bytes
+        for(int i = 0; i < 4; ++i){
+            file.get(byte);
+        }
+
+        //set flags and program sizes
+        file.get(byte);
+        PRG_ROM_size = 16 * KB * byte;
+        file.get(byte);
+        CHR_ROM_size = 8 * KB * byte;
+        file.get(byte);
+        flag6 = byte;
+
+        //get past the rest of header bytes
+        for(int i = 7; i < 16; i++){
+            file.get(byte);
+        }
 
         while(file.get(byte) && program_adress <= 0xffff){
             memory[program_adress] = byte;
