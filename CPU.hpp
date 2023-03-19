@@ -3,18 +3,16 @@
 
 #include<fstream>
 
-using namespace std;
-
 #define MEMORY_SIZE 65535
 class CPU {
 private:
-    uint8_t memory[MEMORY_SIZE];     //ffff bytes
-    uint8_t regA;          //accumulator
-    uint8_t regX;          //x and y are index regs
-    uint8_t regY;
-    uint8_t regP;          //status register  -- Negative, Overflow, ignored, Break, Decimal, Interrupt, Zero, Carry
-    uint8_t regSP;         //stack pointer     |    7         6         5       4       3         2        1     0
-    uint16_t regPC;        //program counter
+    std::uint8_t memory[MEMORY_SIZE];     //ffff bytes
+    std::uint8_t regA;          //accumulator
+    std::uint8_t regX;          //x and y are index regs
+    std::uint8_t regY;
+    std::uint8_t regP;          //status register  -- Negative, Overflow, ignored, Break, Decimal, Interrupt, Zero, Carry
+    std::uint8_t regSP;         //stack pointer     |    7         6         5       4       3         2        1     0
+    std::uint16_t regPC;        //program counter
 public:
     CPU(){
         for(int i = 0 ; i < MEMORY_SIZE ; i++){
@@ -28,9 +26,9 @@ public:
         regPC = 0;
     }
 
-    void ADC(uint16_t adress_index){
-        uint8_t carry_bit = 1 & regP;
-        uint8_t adder = memory[adress_index];
+    void ADC(std::uint16_t adress_index){
+        std::uint8_t carry_bit = 1 & regP;
+        std::uint8_t adder = memory[adress_index];
         //checks for setting carry and overflow flags
         if((adder + regA + carry_bit) > 255){
             regP = regP | 0b01000001;
@@ -59,7 +57,7 @@ public:
 
     }
 
-    void AND(uint16_t adress_index){
+    void AND(std::uint16_t adress_index){
         regA = memory[adress_index] & regA;
 
         //checks for setting negative flag
@@ -103,26 +101,26 @@ public:
         }
     }
 
-    void BCC(uint16_t adress_index){
+    void BCC(std::uint16_t adress_index){
         if(!(regP & 0b00000001)){
             regPC = adress_index;
         }
     }
 
-    void BCS(uint16_t adress_index){
+    void BCS(std::uint16_t adress_index){
         if(regP & 0b00000001){
             regPC = adress_index;
         }
     }
 
-    void BEQ(uint16_t adress_index){
+    void BEQ(std::uint16_t adress_index){
         if(regP & 0b00000010){
             regPC = adress_index;
         }
     }
 
-    void BIT(uint16_t adress_index){
-        uint8_t operand = memory[adress_index];
+    void BIT(std::uint16_t adress_index){
+        std::uint8_t operand = memory[adress_index];
 
         //setting negative flag
         if(operand & 0b10000000){
@@ -146,19 +144,19 @@ public:
         }
     }
 
-    void BMI(uint16_t adress_index){
+    void BMI(std::uint16_t adress_index){
         if(regP & 0b10000000){
             regPC = adress_index;
         }
     }
 
-    void BNE(uint16_t adress_index){
+    void BNE(std::uint16_t adress_index){
         if(!(regP & 0b00000010)){
             regPC = adress_index;
         }
     }
 
-    void BPL(uint16_t adress_index){
+    void BPL(std::uint16_t adress_index){
         if(!(regP & 0b10000000)){
             regPC = adress_index;
         }
@@ -176,13 +174,13 @@ public:
         memory[0x100 + (regSP--)] = regP;
     }
 
-    void BVC(uint16_t adress_index){
+    void BVC(std::uint16_t adress_index){
         if(!(regP & 0b01000000)){
             regPC = adress_index;
         }
     }
 
-    void BVS(uint16_t adress_index){
+    void BVS(std::uint16_t adress_index){
         if(regP & 0b01000000){
             regPC = adress_index;
         }
@@ -200,8 +198,8 @@ public:
         regP = regP & 0b10111111;
     }
 
-    void CMP(uint16_t adress_index){
-        uint8_t operand = memory[adress_index];
+    void CMP(std::uint16_t adress_index){
+        std::uint8_t operand = memory[adress_index];
 
         //setting the carry flag
         if(regA >= operand){
@@ -210,7 +208,7 @@ public:
             regP = regP & 0b11111110;
         }
 
-        uint8_t result = regA - operand;
+        std::uint8_t result = regA - operand;
 
         //setting the zero flag
         if(!result){
@@ -227,8 +225,8 @@ public:
         }
     }
 
-    void CPX(uint16_t adress_index){
-        uint8_t operand = memory[adress_index];
+    void CPX(std::uint16_t adress_index){
+        std::uint8_t operand = memory[adress_index];
 
         //setting the carry flag
         if(regX >= operand){
@@ -237,7 +235,7 @@ public:
             regP = regP & 0b11111110;
         }
 
-        uint8_t result = regX - operand;
+        std::uint8_t result = regX - operand;
 
         //setting the zero flag
         if(!result){
@@ -254,8 +252,8 @@ public:
         }
     }
 
-    void CPY(uint16_t adress_index){
-        uint8_t operand = memory[adress_index];
+    void CPY(std::uint16_t adress_index){
+        std::uint8_t operand = memory[adress_index];
 
         //setting the carry flag
         if(regY >= operand){
@@ -264,7 +262,7 @@ public:
             regP = regP & 0b11111110;
         }
 
-        uint8_t result = regY - operand;
+        std::uint8_t result = regY - operand;
 
         //setting the zero flag
         if(!result){
@@ -281,7 +279,7 @@ public:
         }
     }
 
-    void DEC(uint16_t adress_index){
+    void DEC(std::uint16_t adress_index){
         memory[adress_index]--;
 
         //setting the zero flag
@@ -335,7 +333,7 @@ public:
         }
     }
 
-    void EOR(uint16_t adress_index){
+    void EOR(std::uint16_t adress_index){
         regA = regA ^ memory[adress_index];
 
         //setting the zero flag
@@ -353,7 +351,7 @@ public:
         }
     }
 
-    void INC(uint16_t adress_index){
+    void INC(std::uint16_t adress_index){
         //setting zero and doing inc
         if(++memory[adress_index] == 0){
             regP = regP | 0b00000010;
@@ -401,12 +399,12 @@ public:
         }
     }
 
-    void JMP(uint16_t adress_index){
+    void JMP(std::uint16_t adress_index){
         //jumping to adress
         regPC = adress_index;
     }
 
-    void JSR(uint16_t adress_index){
+    void JSR(std::uint16_t adress_index){
         //pushing return adress to the stack
         //must always add 0x100 to stack pointer!
         memory[0x100 + (regSP--)] = regPC + 1;
@@ -417,7 +415,7 @@ public:
 
 
 
-    void LDA(uint8_t value){
+    void LDA(std::uint8_t value){
         regA = value;
 
         //checks for setting negative flag
@@ -435,7 +433,7 @@ public:
         }
     }
 
-    void LDX(uint8_t value){
+    void LDX(std::uint8_t value){
         regX = value;
 
         //checks for setting negative flag
@@ -453,7 +451,7 @@ public:
         }
     }
 
-    void LDY(uint8_t value){
+    void LDY(std::uint8_t value){
         regY = value;
 
         //checks for setting negative flag
@@ -471,19 +469,19 @@ public:
         }
     }
 
-    void LSR(bool use_A, uint16_t adress_index){
+    void LSR(bool use_A, std::uint16_t adress_index){
         //TODO:
     }
 
-    void STA(uint16_t adress_index){
+    void STA(std::uint16_t adress_index){
         memory[adress_index] = regA;
     }
 
-    void STX(uint16_t adress_index){
+    void STX(std::uint16_t adress_index){
         memory[adress_index] = regX;
     }
 
-    void STY(uint16_t adress_index){
+    void STY(std::uint16_t adress_index){
         memory[adress_index] = regY;
     }
 
@@ -596,11 +594,11 @@ public:
     }
 
     //loads a .nes file into memory
-    void load(string file_name){
-        fstream file;
+    void load(std::string file_name){
+        std::fstream file;
         char byte;
         //begining of PRG_ROM memory
-        uint16_t program_adress = 0x4020;
+        std::uint16_t program_adress = 0x4020;
 
 
         file.open(file_name);
@@ -616,10 +614,10 @@ public:
 
 
 
-    void printMemory(uint16_t first, uint16_t last){
+    void printMemory(std::uint16_t first, std::uint16_t last){
         //printing status register
-        uint8_t mask = 1;
-        uint8_t statusReg = regP;
+        std::uint8_t mask = 1;
+        std::uint8_t statusReg = regP;
         std::cout<<"Status register:"<<std::endl;
         std::cout<<"C Z I D B - V N"<<std::endl;
         for(int i = 0 ; i < 8 ; i++){
