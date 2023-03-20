@@ -84,26 +84,27 @@ public:
         }
     }
 
-    void ASL(){
+    void ASL(std::uint16_t adress_index){
+        std::uint8_t operand = memory[adress_index];
         //checking for setting the carry flag
-        if((regA & 0b10000000) != 0){
+        if((operand & 0b10000000) != 0){
             regP = regP | 0b00000001;
         }else{
             regP = regP & 0b11111110;
         }
 
         //doing actual operation
-        regA <<= 1;
+        operand <<= 1;
 
         //checking for setting the zero flag
-        if(regA == 0){
+        if(operand == 0){
             regP = regP | 0b00000010;
         }else{
             regP = regP & 0b11111101;
         }
 
         //checking for setting the negative flag
-        if((regA & 0b10000000) != 0){
+        if((operand & 0b10000000) != 0){
             regP = regP | 0b10000000;
         }else{
             regP = regP & 0b01111111;
@@ -478,8 +479,28 @@ public:
         }
     }
 
-    void LSR(bool use_A, std::uint16_t adress_index){
-        //TODO:
+    void LSR(std::uint16_t adress_index){
+        //setting the cary flag
+        if(memory[adress_index] & 0x00000001){
+            regP = regP | 0x00000001;
+        }else{
+            regP = regP & 0x11111110;
+        }
+
+        //setting the negative flag
+        regP = regP & 0x01111111;
+
+        memory[adress_index] >>= 1;
+
+        if(!memory[adress_index]){
+            regP = regP | 0x00000010;
+        }else{
+            regP = regP & 0x11111101;
+        }
+    }
+
+    void ORA(uint16_t adress_index){
+        //TODO
     }
 
     void STA(std::uint16_t adress_index){
@@ -635,7 +656,988 @@ public:
         file.close();
     }
 
+    void do_operation(std::uint8_t op_code){
+        std::uint8_t adress_8bit;
+        std::uint16_t adress_16bit;
+        switch(op_code){
+            //ADC (ADD with Carry)
+            //imidiate
+            case 0x69:
+                adress_16bit = regPC + 1;
+                ADC(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0x65:
+                adress_8bit = memory[regPC + 1];
+                ADC(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x75:
+                adress_8bit = memory[regPC + 1] + regX;
+                ADC(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x6d:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                ADC(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x7d:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                ADC(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0x79:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                ADC(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, x
+            case 0x61:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                ADC(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, y
+            case 0x71:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                ADC(adress_16bit);
+                regPC += 2;
+                break;
+            
+            //AND (Bitwise and with Accumulator)
+            //imidiate
+            case 0x29:
+                adress_16bit = regPC + 1;
+                AND(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0x25:
+                adress_8bit = memory[regPC + 1];
+                AND(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x35:
+                adress_8bit = memory[regPC + 1] + regX;
+                AND(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x2d:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                AND(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x3d:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                AND(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0x39:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                AND(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, X
+            case 0x21:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                AND(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, Y
+            case 0x31:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                AND(adress_16bit);
+                regPC += 2;
+                break;
 
+            //ASL (Arithmetic Shift Left)
+            //Accumulator
+            case 0x0a:
+                memory[0] = regA;
+                ASL(0);
+                regA = memory[0];
+                regPC ++;
+                break;
+            //zero page
+            case 0x06:
+                adress_8bit = memory[regPC + 1];
+                ASL(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x16:
+                adress_8bit = memory[regPC + 1] + regX;
+                ASL(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x0e:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                ASL(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x1e:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                ASL(adress_16bit);
+                regPC += 3;
+                break;
+
+            //BIT (test BITs)
+            //zero page
+            case 0x24:
+                adress_8bit = memory[regPC + 1];
+                BIT(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x2c:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                BIT(adress_16bit);
+                regPC += 3;
+                break;
+
+            //BRANCH instructions
+            case 0x10:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BPL(adress_16bit);
+                break;
+            case 0x30:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BMI(adress_16bit);
+                break;
+            case 0x50:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BVC(adress_16bit);
+                break;
+            case 0x70:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BVS(adress_16bit);
+                break;
+            case 0x90:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BCC(adress_16bit);
+                break;
+            case 0xb0:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BCS(adress_16bit);
+                break;
+            case 0xd0:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BNE(adress_16bit);
+                break;
+            case 0xf0:
+                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                BEQ(adress_16bit);
+                break;
+
+            //BRK (Break)
+            case 0x00:
+                BRK();
+                regPC ++;
+                break;
+            
+            //CMP (Compare accumulator)
+            //immediate
+            case 0xc9:
+                adress_16bit = regPC + 1;
+                CMP(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xc5:
+                adress_8bit = memory[regPC + 1];
+                CMP(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0xd5:
+                adress_8bit = memory[regPC + 1] + regX;
+                CMP(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xcd:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                CMP(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0xdd:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                CMP(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0xd9:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                CMP(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, x
+            case 0xc1:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                CMP(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, y
+            case 0xd1:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                CMP(adress_16bit);
+                regPC += 2;
+                break;
+            
+            //CPX (Compare X Register)
+            //immediate
+            case 0xe0:
+                adress_16bit = regPC + 1;
+                CPX(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xe4:
+                adress_8bit = memory[regPC + 1];
+                CPX(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xec:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                CPX(adress_16bit);
+                regPC += 3;
+                break;
+            
+            //CPY (Compare Y Register)
+            //immediate
+            case 0xc0:
+                adress_16bit = regPC + 1;
+                CPY(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xc4:
+                adress_8bit = memory[regPC + 1];
+                CPY(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xcc:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                CPY(adress_16bit);
+                regPC += 3;
+                break;
+            
+            //DEC (Decrement memory)
+            //zero page
+            case 0xc6:
+                adress_8bit = memory[regPC + 1];
+                DEC(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page,x
+            case 0xd6:
+                adress_8bit = memory[regPC + 1] + regX;
+                DEC(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xce:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                DEC(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute,x
+            case 0xde:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                DEC(adress_16bit);
+                regPC += 3;
+                break;
+            
+            //EOR (bitwise Exclusive OR)
+            //imidiate
+            case 0x49:
+                adress_16bit = regPC + 1;
+                EOR(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0x45:
+                adress_8bit = memory[regPC + 1];
+                EOR(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x55:
+                adress_8bit = memory[regPC + 1] + regX;
+                EOR(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x4d:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                EOR(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x5d:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                EOR(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0x59:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                EOR(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, X
+            case 0x41:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                EOR(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, Y
+            case 0x51:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                EOR(adress_16bit);
+                regPC += 2;
+                break;
+
+            //FLAG Instructions
+            case 0x18:
+                CLC();
+                regPC++;
+                break;
+            case 0x38:
+                //TODO SEC
+                regPC++;
+                break;
+            case 0x58:
+                CLI();
+                regPC++;
+                break;
+            case 0x78:
+                //SEI TODO
+                regPC++;
+                break;
+            case 0xb8:
+                CLV();
+                regPC++;
+                break;
+            case 0xd8:
+                //TODO CLD
+                regPC++;
+                break;
+            case 0xf8:
+                // TODO SED();
+            
+            //INC (Increment Memory)
+            //zero page
+            case 0xe6:
+                adress_8bit = memory[regPC + 1];
+                INC(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page,x
+            case 0xf6:
+                adress_8bit = memory[regPC + 1] + regX;
+                INC(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xee:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                INC(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute,x
+            case 0xfe:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                INC(adress_16bit);
+                regPC += 3;
+                break;
+            
+            //JMP (Jump)
+            //absolute
+            case 0x4c:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                JMP(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect
+            case 0x6c:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1]];
+                JMP(adress_16bit);
+                regPC += 2;
+                break;
+            
+            //JSR (Jump To Subroutine)
+            //absolute
+            case 0x20:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                JSR(adress_16bit);
+                regPC += 3;
+                break;
+
+            //LDA (Load Accumulator)
+            //imidiate
+            case 0xa9:
+                adress_16bit = regPC + 1;
+                LDA(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xa5:
+                adress_8bit = memory[regPC + 1];
+                LDA(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0xb5:
+                adress_8bit = memory[regPC + 1] + regX;
+                LDA(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xad:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                LDA(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0xbd:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                LDA(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0xb9:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                LDA(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, X
+            case 0xa1:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                LDA(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, Y
+            case 0xb1:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                LDA(adress_16bit);
+                regPC += 2;
+                break;
+
+            //LDX (Load X Register)
+            //imidiate
+            case 0xa2:
+                adress_16bit = regPC + 1;
+                LDX(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xa6:
+                adress_8bit = memory[regPC + 1];
+                LDX(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, y
+            case 0xb6:
+                adress_8bit = memory[regPC + 1] + regY;
+                LDX(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xae:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                LDX(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0xbe:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                LDX(adress_16bit);
+                regPC += 3;
+                break;
+
+            //LDY (Load Y Register)
+            //imidiate
+            case 0xa0:
+                adress_16bit = regPC + 1;
+                LDY(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xa4:
+                adress_8bit = memory[regPC + 1];
+                LDY(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0xb4:
+                adress_8bit = memory[regPC + 1] + regX;
+                LDY(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xac:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                LDY(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0xbc:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                LDY(adress_16bit);
+                regPC += 3;
+                break;
+            
+            //LSR (Logical Shift Right)
+            //Accumulator
+            case 0x4a:
+                memory[0] = regA;
+                LSR(0);
+                regA = memory[0];
+                regPC ++;
+                break;
+            //zero page
+            case 0x46:
+                adress_8bit = memory[regPC + 1];
+                LSR(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x56:
+                adress_8bit = memory[regPC + 1] + regX;
+                LSR(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x4e:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                LSR(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x5e:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                LSR(adress_16bit);
+                regPC += 3;
+                break;
+            
+            //NOP (No Operation)
+            //implied
+            case 0xea:
+                regPC ++;
+                break;
+            
+            //ORA (Bitwise Or With Accumulator)
+            //imidiate
+            case 0x09:
+                adress_16bit = regPC + 1;
+                ORA(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0x05:
+                adress_8bit = memory[regPC + 1];
+                ORA(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x15:
+                adress_8bit = memory[regPC + 1] + regX;
+                ORA(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x0d:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                ORA(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x1d:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                ORA(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0x19:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                ORA(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, X
+            case 0x01:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                ORA(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, Y
+            case 0x11:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                ORA(adress_16bit);
+                regPC += 2;
+                break;
+            
+            //Register instructions
+            case 0xaa:
+                TAX();
+                regPC++;
+                break;
+            case 0x8a:
+                TXA();
+                regPC++;
+                break;
+            case 0xca:
+                DEX();
+                regPC++;
+                break;
+            case 0xe8:
+                INX();
+                regPC++;
+                break;
+            case 0xa8:
+                TAY();
+                regPC++;
+                break;
+            case 0x98:
+                TYA();
+                regPC++;
+                break;
+            case 0x88:
+                DEY();
+                regPC++;
+                break;
+            case 0xc8:
+                INY();
+                regPC++;
+                break;
+            
+            //ROL (Rotate Left)
+            //TODO:
+
+            //ROR (Rotate Right)
+            //TODO:
+
+            //RTI (Return from Intertupt)
+            //TODO:
+
+            //RST (Return from Subroutine)
+            //TODO:
+
+            //SBC (Subtract with Carry)
+            //TODO:
+
+            //STA (Store Accumulator)
+            //zero page
+            case 0x85:
+                adress_8bit = memory[regPC + 1];
+                STA(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x95:
+                adress_8bit = memory[regPC + 1] + regX;
+                STA(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x8d:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                STA(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x9d:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                STA(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0x99:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                STA(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, X
+            case 0x81:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                STA(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, Y
+            case 0x91:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                STA(adress_16bit);
+                regPC += 2;
+                break;
+            
+            //Stack INstructions
+            case 0x9a:
+                TXS();
+                regPC++;
+                break;
+            case 0xba:
+                TSX();
+                regPC++;
+                break;
+            case 0x48:
+                //TODO: PHA(); 
+                regPC++;
+                break;
+            case 0x68:
+                //TODO: PLA();
+                regPC++;
+                break;
+            case 0x08:
+                //TODO: PHP();
+                regPC++;
+                break;
+            case 0x28:
+                //TODO: PLP();
+                regPC++;
+                break;
+            
+            //STX (Store X Register)
+            //zero page
+            case 0x86:
+                adress_8bit = memory[regPC + 1];
+                STX(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, y
+            case 0x96:
+                adress_8bit = memory[regPC + 1] + regY;
+                STX(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x8e:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                STX(adress_16bit);
+                regPC += 3;
+                break;
+
+            //STY (Store Y Register)
+            //zero page
+            case 0x84:
+                adress_8bit = memory[regPC + 1];
+                STY(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x94:
+                adress_8bit = memory[regPC + 1] + regX;
+                STY(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x8c:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                STY(adress_16bit);
+                regPC += 3;
+                break;
+            
+            default:
+                std::cout<<"Error: Op Code not supported!"<<std::endl;
+        }
+    }
+
+    void run(){
+        //beggining of the program
+        regPC = 0x4020;
+        std::uint8_t op_code = 0;
+        while(true){
+            op_code = memory[regPC];
+            do_operation(op_code);
+        }
+    }
 
     void printMemory(std::uint16_t first, std::uint16_t last){
         //printing status register
