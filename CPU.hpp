@@ -500,7 +500,21 @@ public:
     }
 
     void ORA(uint16_t adress_index){
-        //TODO
+        memory[adress_index] = memory[adress_index] | regA;
+
+        //setting zero flag
+        if(memory[adress_index] == 0){
+            regP = regP | 0b00000001;
+        }else{
+            regP = regP & 0b11111110;
+        }
+
+        //setting negative flag
+        if(memory[adress_index] & 0b10000000 != 0){
+            regP = regP | 0b10000000;
+        }else{
+            regP = regP & 0b01111111;
+        }
     }
 
     void STA(std::uint16_t adress_index){
@@ -1626,6 +1640,7 @@ public:
             
             default:
                 std::cout<<"Error: Op Code not supported!"<<std::endl;
+            
         }
     }
 
