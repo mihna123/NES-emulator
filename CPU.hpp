@@ -653,6 +653,41 @@ public:
         }
     }
 
+    void ROL(std::uint16_t adress_index){
+        bool carry = false;
+        //checking if carry will be 1
+        if(memory[adress_index] & 0b10000000 != 0){
+            carry = true;
+        }
+        //doing it
+        memory[adress_index] <<= 1;
+
+        if(regP & 0b00000001 != 0){
+            memory[adress_index] ++;
+        }
+
+        //setting carry after
+        if(carry){
+            regP = regP | 0b00000001;
+        }else{
+            regP = regP & 0b11111110;
+        }
+
+        //setting negative flag
+        if(memory[adress_index] & 0b10000000 != 0){
+            regP = regP | 0b10000000;
+        }else{
+            regP = regP & 0b01111111;
+        }
+
+        //setting zero flag
+        if(memory[adress_index] == 0){
+            regP = regP | 0b00000010;
+        }else{
+            regP = regP & 0b11111101;
+        }
+    }
+
     //loads a .nes file into memory
     void load(std::string file_name){
         std::ifstream file(file_name,std::ios_base::binary);
