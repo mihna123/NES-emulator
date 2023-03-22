@@ -289,6 +289,10 @@ public:
         }
     }
 
+    void CLD(){
+        regP = regP & 0x11110111;
+    }
+
     void DEC(std::uint16_t adress_index){
         memory[adress_index]--;
 
@@ -504,9 +508,9 @@ public:
 
         //setting zero flag
         if(memory[adress_index] == 0){
-            regP = regP | 0b00000001;
+            regP = regP | 0b00000010;
         }else{
-            regP = regP & 0b11111110;
+            regP = regP & 0b11111101;
         }
 
         //setting negative flag
@@ -527,6 +531,18 @@ public:
 
     void STY(std::uint16_t adress_index){
         memory[adress_index] = regY;
+    }
+
+    void SEC(){
+        regP = regP | 0b00000001;
+    }
+
+    void SEI(){
+        regP = regP | 0b00000100;
+    }
+
+    void SED(){
+        regP = regP | 0b00001000;
     }
 
     void TAX(){
@@ -1118,7 +1134,7 @@ public:
                 regPC++;
                 break;
             case 0x38:
-                //TODO SEC
+                SEC();
                 regPC++;
                 break;
             case 0x58:
@@ -1126,7 +1142,7 @@ public:
                 regPC++;
                 break;
             case 0x78:
-                //SEI TODO
+                SEI();
                 regPC++;
                 break;
             case 0xb8:
@@ -1134,11 +1150,11 @@ public:
                 regPC++;
                 break;
             case 0xd8:
-                //TODO CLD
+                CLD();
                 regPC++;
                 break;
             case 0xf8:
-                // TODO SED();
+                SED();
             
             //INC (Increment Memory)
             //zero page
