@@ -688,6 +688,61 @@ public:
         }
     }
 
+    void ROR(std::uint16_t adress_index){
+          bool carry = false;
+        //checking if carry will be 1
+        if(memory[adress_index] & 0b00000001 != 0){
+            carry = true;
+        }
+        //doing it
+        memory[adress_index] >>= 1;
+
+        if(regP & 0b00000001 != 0){
+            memory[adress_index] += 0b10000000;
+        }
+
+        //setting carry after
+        if(carry){
+            regP = regP | 0b00000001;
+        }else{
+            regP = regP & 0b11111110;
+        }
+
+        //setting negative flag
+        if(memory[adress_index] & 0b10000000 != 0){
+            regP = regP | 0b10000000;
+        }else{
+            regP = regP & 0b01111111;
+        }
+
+        //setting zero flag
+        if(memory[adress_index] == 0){
+            regP = regP | 0b00000010;
+        }else{
+            regP = regP & 0b11111101;
+        }
+    }
+
+    void RTI(){
+        //pullin SR from stack
+        regP = memory[0x100 + regSP++];
+
+        //ignore fifth flag
+        regP = regP & 0x11101111;
+
+        //pulling PC from stack
+        regPC = memory[0x100 + regSP++];
+    }
+
+    void RTS(){
+        //just pulling PC froom stack
+        regPC = memory[0x100 + regSP++];
+    }
+
+    void SBC(std::uint16_t adress_index){//todo , not sure how it works :<
+        int carry = 1;
+    }
+
     //loads a .nes file into memory
     void load(std::string file_name){
         std::ifstream file(file_name,std::ios_base::binary);
@@ -1542,16 +1597,16 @@ public:
                 break;
             
             //ROL (Rotate Left)
-            //TODO:
+            //TODO:done, just implement case
 
             //ROR (Rotate Right)
-            //TODO:
+            //TODO:done, just implement case
 
             //RTI (Return from Intertupt)
-            //TODO:
+            //TODO:done, just implement case
 
             //RST (Return from Subroutine)
-            //TODO:
+            //TODO:done, just implement case
 
             //SBC (Subtract with Carry)
             //TODO:
