@@ -743,6 +743,41 @@ public:
         int carry = 1;
     }
 
+    void PHA(){
+        //pushing accumulator to stack
+        memory[0x100 + regSP--] = regA;
+    }
+
+    void PLA(){
+        //pulling from stack
+        regA = memory[0x100 + regSP++];
+
+        //setting zero flag
+        if(regA == 0){
+            regP = regP | 0b00000010;
+        }else{
+            regP = regP & 0b11111101;
+        }
+
+        //setting negative flag
+        if(regA & 0b10000000 != 0){
+            regP = regP | 0b10000000;
+        }else{
+            regP = regP & 0b01111111;
+        }
+    }
+
+    void PHP(){
+        //pushing SR to stack with break and ignore set to 1
+        memory[0x100 + regSP--] = regP | 0b00110000;
+
+    }
+
+    void PLP(){
+        //pulling SR from stack while ignoring break and bit 5
+        regP = memory[0x100 + regSP++] & 0b11001111;
+    }
+
     //loads a .nes file into memory
     void load(std::string file_name){
         std::ifstream file(file_name,std::ios_base::binary);
@@ -1682,19 +1717,19 @@ public:
                 regPC++;
                 break;
             case 0x48:
-                //TODO: PHA(); 
+                PHA(); 
                 regPC++;
                 break;
             case 0x68:
-                //TODO: PLA();
+                PLA();
                 regPC++;
                 break;
             case 0x08:
-                //TODO: PHP();
+                PHP();
                 regPC++;
                 break;
             case 0x28:
-                //TODO: PLP();
+                PLP();
                 regPC++;
                 break;
             
