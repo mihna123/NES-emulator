@@ -4,6 +4,8 @@
 #include<fstream>
 #include<iostream>
 #include<iomanip>
+#include<thread>
+#include<chrono>
 
 #define KB 1024
 #define MEMORY_SIZE (64 * KB)
@@ -1037,7 +1039,8 @@ public:
 
             //BRANCH instructions
             case 0x10:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                //fix jumps TODO
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BPL(adress_16bit);
                 break;
             case 0x30:
@@ -1962,7 +1965,10 @@ public:
         std::uint8_t op_code = 0;
         while(true){
             op_code = memory[regPC];
+            std::cout<<"OP_CODE: "<<std::hex<<std::setw(2)<<std::setfill('0')<<(int)op_code<<std::endl;
             do_operation(op_code);
+            printMemory(0,0);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 
