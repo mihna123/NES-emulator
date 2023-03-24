@@ -768,7 +768,7 @@ public:
     }
 
     void PHP(){
-        //pushing SR to stack with break and ignore set to 1
+        //pushing SR to stack with break and bit 5 set to 1
         memory[0x100 + regSP--] = regP | 0b00110000;
 
     }
@@ -1632,17 +1632,93 @@ public:
                 break;
             
             //ROL (Rotate Left)
-            //TODO:done, just implement case
+            //Accumulator
+            case 0x2a:
+                memory[0] = regA;
+                ROL(0);
+                regA = memory[0];
+                regPC ++;
+                break;
+            //zero page
+            case 0x26:
+                adress_8bit = memory[regPC + 1];
+                ROL(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x36:
+                adress_8bit = memory[regPC + 1] + regX;
+                ROL(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x2e:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                ROL(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x3e:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                ROL(adress_16bit);
+                regPC += 3;
+                break;
 
             //ROR (Rotate Right)
-            //TODO:done, just implement case
+            //Accumulator
+            case 0x6a:
+                memory[0] = regA;
+                ROR(0);
+                regA = memory[0];
+                regPC ++;
+                break;
+            //zero page
+            case 0x66:
+                adress_8bit = memory[regPC + 1];
+                ROR(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0x76:
+                adress_8bit = memory[regPC + 1] + regX;
+                ROR(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0x6e:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                ROR(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0x7e:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                ROR(adress_16bit);
+                regPC += 3;
+                break;
 
             //RTI (Return from Intertupt)
-            //TODO:done, just implement case
-
+            //implied
+            case 0x40:
+                RTI();
+                break;
             //RST (Return from Subroutine)
-            //TODO:done, just implement case
-
+            //implied
+            case 0x60:
+                RTS();
+                break;
             //SBC (Subtract with Carry)
             //TODO:
 
