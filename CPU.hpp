@@ -1040,35 +1040,35 @@ public:
             //BRANCH instructions
             case 0x10:
                 //fix jumps TODO 
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BPL(adress_16bit);
                 break;
             case 0x30:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BMI(adress_16bit);
                 break;
             case 0x50:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BVC(adress_16bit);
                 break;
             case 0x70:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BVS(adress_16bit);
                 break;
             case 0x90:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BCC(adress_16bit);
                 break;
             case 0xb0:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BCS(adress_16bit);
                 break;
             case 0xd0:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BNE(adress_16bit);
                 break;
             case 0xf0:
-                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
                 BEQ(adress_16bit);
                 break;
 
@@ -1965,10 +1965,11 @@ public:
         std::uint8_t op_code = 0;
         while(true){
             op_code = memory[regPC];
-            std::cout<<"OP_CODE: "<<std::hex<<std::setw(2)<<std::setfill('0')<<(int)op_code<<std::endl;
+            std::cout<<std::endl<<"OP_CODE: "<<std::hex<<std::setw(2)<<std::setfill('0')<<(int)op_code<<std::endl;
+            std::cout<<"regPC: "<<std::hex<<std::setw(4)<<std::setfill('0')<<(int)regPC<<std::endl;
             do_operation(op_code);
             printMemory(0,0);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
         }
     }
 
