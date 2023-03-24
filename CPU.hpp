@@ -1039,36 +1039,36 @@ public:
 
             //BRANCH instructions
             case 0x10:
-                //fix jumps TODO
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                //fix jumps TODO 
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BPL(adress_16bit);
                 break;
             case 0x30:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BMI(adress_16bit);
                 break;
             case 0x50:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BVC(adress_16bit);
                 break;
             case 0x70:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BVS(adress_16bit);
                 break;
             case 0x90:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BCC(adress_16bit);
                 break;
             case 0xb0:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BCS(adress_16bit);
                 break;
             case 0xd0:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BNE(adress_16bit);
                 break;
             case 0xf0:
-                adress_16bit = regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = ++regPC + (std::int8_t)memory[regPC + 1];
                 BEQ(adress_16bit);
                 break;
 
