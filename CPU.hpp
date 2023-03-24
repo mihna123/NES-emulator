@@ -739,8 +739,38 @@ public:
         regPC = memory[0x100 + regSP++];
     }
 
-    void SBC(std::uint16_t adress_index){//todo , not sure how it works :<
-        int carry = 1;
+    void SBC(std::uint16_t adress_index){
+        //carry flag for borrowing
+        if(regA < memory[adress_index]){
+            regP = regP | 0b00000001;
+        }else{
+            regP = regP & 0b11111110;
+        }
+
+        //setting the overflow flag
+        if((int)regA - (int)memory[adress_index] < -128){
+            regP = regP | 0b01000000;
+        }else{
+            regP = regP & 0b10111111;
+        }
+
+        regA -= memory[adress_index];
+
+        //setting the negative flag
+        if(regA & 0b10000000 != 0){
+            regP = regP | 0b10000000;
+        }else{
+            regP = regP & 0b01111111;
+        }
+
+        //setting the zero flag
+        if(regA == 0){
+            regP = regP | 0b00000010;
+        }else{
+            regP = regP & 0b11111101;
+        }
+
+
     }
 
     void PHA(){
@@ -1719,8 +1749,73 @@ public:
             case 0x60:
                 RTS();
                 break;
+            
             //SBC (Subtract with Carry)
-            //TODO:
+             //imidiate
+            case 0xe9:
+                adress_16bit = regPC + 1;
+                SBC(adress_16bit);
+                regPC += 2;
+                break;
+            //zero page
+            case 0xe5:
+                adress_8bit = memory[regPC + 1];
+                SBC(adress_8bit);
+                regPC += 2;
+                break;
+            //zero page, x
+            case 0xf5:
+                adress_8bit = memory[regPC + 1] + regX;
+                SBC(adress_8bit);
+                regPC += 2;
+                break;
+            //absolute
+            case 0xed:
+                //6502 is little endian
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                SBC(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, x
+            case 0xfd:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regX;
+                SBC(adress_16bit);
+                regPC += 3;
+                break;
+            //absolute, y
+            case 0xf9:
+                adress_16bit = memory[regPC + 2];
+                adress_16bit <<= 4;
+                adress_16bit += memory[regPC + 1];
+                adress_16bit += regY;
+                SBC(adress_16bit);
+                regPC += 3;
+                break;
+            //indirect, X
+            case 0xe1:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regX];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regX];
+                SBC(adress_16bit);
+                regPC += 2;
+                break;
+            //indirect, Y
+            case 0xf1:
+                //high byte
+                adress_16bit = memory[memory[regPC + 1] + 1 + regY];
+                adress_16bit <<= 4;
+                //low byte
+                adress_16bit += memory[memory[regPC + 1] + regY];
+                SBC(adress_16bit);
+                regPC += 2;
+                break;
 
             //STA (Store Accumulator)
             //zero page
