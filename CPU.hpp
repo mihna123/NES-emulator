@@ -813,6 +813,10 @@ public:
     //loads a .nes file into memory
     void load(std::string file_name){
         std::ifstream file(file_name,std::ios_base::binary);
+        if(!file.is_open()){
+            std::cout<<"Could not read <"<<file_name<<">. Exiting program!"<<std::endl;
+            exit(EXIT_FAILURE);
+        }
         char byte;
         //begining of PRG_ROM memory
         std::uint16_t program_adress = 0x4020;
@@ -1378,8 +1382,8 @@ public:
             //LDA (Load Accumulator)
             //imidiate
             case 0xa9:
-                adress_16bit = regPC + 1;
-                LDA(adress_16bit);
+                adress_16bit = regPC + 1; 
+                LDA(memory[adress_16bit]);
                 regPC += 2;
                 break;
             //zero page
@@ -1446,7 +1450,7 @@ public:
             //imidiate
             case 0xa2:
                 adress_16bit = regPC + 1;
-                LDX(adress_16bit);
+                LDX(memory[adress_16bit]);
                 regPC += 2;
                 break;
             //zero page
@@ -1484,7 +1488,7 @@ public:
             //imidiate
             case 0xa0:
                 adress_16bit = regPC + 1;
-                LDY(adress_16bit);
+                LDY(memory[adress_16bit]);
                 regPC += 2;
                 break;
             //zero page
@@ -1834,11 +1838,13 @@ public:
                 regPC += 2;
                 break;
             //absolute
-            case 0x8d:
+            case 0x8d://todo
                 //6502 is little endian
                 adress_16bit = memory[regPC + 2];
-                adress_16bit <<= 4;
+                adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
+                //adress_16bit = *((short*)&memory[regPC + 1]);
+
                 STA(adress_16bit);
                 regPC += 3;
                 break;
@@ -1968,8 +1974,9 @@ public:
             std::cout<<std::endl<<"OP_CODE: "<<std::hex<<std::setw(2)<<std::setfill('0')<<(int)op_code<<std::endl;
             std::cout<<"regPC: "<<std::hex<<std::setw(4)<<std::setfill('0')<<(int)regPC<<std::endl;
             do_operation(op_code);
-            printMemory(0,0);
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            printMemory(0x041f,0x0425);
+            std::cout<<std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
         }
     }
 
@@ -1984,7 +1991,7 @@ public:
             std::cout<<status<<" ";
             statusReg >>= 1;
         }
-        std::cout<<std::endl<<std::endl;
+        std::cout<<std::endl;
 
         //printing memory
         std::cout<<"Memory:"<<std::endl;
