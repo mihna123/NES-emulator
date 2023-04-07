@@ -26,6 +26,8 @@ public:
         for(int i = 0 ; i < MEMORY_SIZE ; i++){
             memory[i] = 0;
         }
+        //todo only for testing, delete later:
+        memory[0x2002] = 0b11111111;
         regA = 0;
         regX = 0;
         regY = 0;
@@ -117,17 +119,26 @@ public:
         if(!(regP & 0b00000001)){
             regPC = adress_index;
         }
+        else{
+            regPC += 2; 
+        }
     }
 
     void BCS(std::uint16_t adress_index){
         if(regP & 0b00000001){
             regPC = adress_index;
         }
+        else{
+            regPC += 2;
+        }
     }
 
     void BEQ(std::uint16_t adress_index){
         if(regP & 0b00000010){
             regPC = adress_index;
+        }
+        else{
+            regPC += 2;
         }
     }
 
@@ -160,17 +171,26 @@ public:
         if(regP & 0b10000000){
             regPC = adress_index;
         }
+        else{
+            regPC += 2;
+        }
     }
 
     void BNE(std::uint16_t adress_index){
         if(!(regP & 0b00000010)){
             regPC = adress_index;
         }
+        else{
+            regPC += 2;
+        }
     }
 
     void BPL(std::uint16_t adress_index){
         if(!(regP & 0b10000000)){
             regPC = adress_index;
+        }
+        else{
+            regPC += 2;
         }
     }
 
@@ -190,11 +210,17 @@ public:
         if(!(regP & 0b01000000)){
             regPC = adress_index;
         }
+        else{
+            regPC += 2;
+        }
     }
 
     void BVS(std::uint16_t adress_index){
         if(regP & 0b01000000){
             regPC = adress_index;
+        }
+        else{
+            regPC += 2;
         }
     }
 
@@ -1044,35 +1070,35 @@ public:
             //BRANCH instructions
             case 0x10:
                 //fix jumps TODO 
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BPL(adress_16bit);
                 break;
             case 0x30:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BMI(adress_16bit);
                 break;
             case 0x50:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BVC(adress_16bit);
                 break;
             case 0x70:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BVS(adress_16bit);
                 break;
             case 0x90:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BCC(adress_16bit);
                 break;
             case 0xb0:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BCS(adress_16bit);
                 break;
             case 0xd0:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BNE(adress_16bit);
                 break;
             case 0xf0:
-                adress_16bit = 1 + regPC + (std::int8_t)memory[regPC + 1];
+                adress_16bit = 2 + regPC + (std::int8_t)memory[regPC + 1];
                 BEQ(adress_16bit);
                 break;
 
@@ -1356,7 +1382,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 JMP(adress_16bit);
-                regPC += 3;
+                //regPC += 3;
                 break;
             //indirect
             case 0x6c:
@@ -1366,7 +1392,7 @@ public:
                 //low byte
                 adress_16bit += memory[memory[regPC + 1]];
                 JMP(adress_16bit);
-                regPC += 2;
+                //regPC += 2;
                 break;
             
             //JSR (Jump To Subroutine)
@@ -1376,7 +1402,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 JSR(adress_16bit);
-                regPC += 3;
+                //regPC += 3;
                 break;
 
             //LDA (Load Accumulator)
@@ -1404,7 +1430,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                LDA(adress_16bit);
+                LDA(memory[adress_16bit]); //todo
                 regPC += 3;
                 break;
             //absolute, x
@@ -1413,7 +1439,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                LDA(adress_16bit);
+                LDA(memory[adress_16bit]);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1422,7 +1448,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                LDA(adress_16bit);
+                LDA(memory[adress_16bit]);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1432,7 +1458,7 @@ public:
                 adress_16bit <<= 8;
                 //low byte
                 adress_16bit += memory[memory[regPC + 1] + regX];
-                LDA(adress_16bit);
+                LDA(memory[adress_16bit]);
                 regPC += 2;
                 break;
             //indirect, Y
@@ -1442,7 +1468,7 @@ public:
                 adress_16bit <<= 8;
                 //low byte
                 adress_16bit += memory[memory[regPC + 1] + regY];
-                LDA(adress_16bit);
+                LDA(memory[adress_16bit]);
                 regPC += 2;
                 break;
 
@@ -1961,6 +1987,7 @@ public:
             
             default:
                 std::cout<<"Error: Op Code not supported!"<<std::endl;
+                std::exit(1);
             
         }
     }
