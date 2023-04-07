@@ -26,8 +26,7 @@ public:
         for(int i = 0 ; i < MEMORY_SIZE ; i++){
             memory[i] = 0;
         }
-        //todo only for testing, delete later:
-        memory[0x2002] = 0b11111111;
+        
         regA = 0;
         regX = 0;
         regY = 0;
@@ -846,6 +845,7 @@ public:
         char byte;
         //begining of PRG_ROM memory
         std::uint16_t program_adress = 0x4020;
+        //std::uint16_t program_adress = 0;
 
         //get past unused bytes
         for(int i = 0; i < 4; ++i){
@@ -902,7 +902,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                ADC(adress_16bit);
+                ADC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -911,7 +911,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                ADC(adress_16bit);
+                ADC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -920,7 +920,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                ADC(adress_16bit);
+                ADC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, x
@@ -969,7 +969,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1]; 
-                AND(adress_16bit);
+                AND(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -978,7 +978,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                AND(adress_16bit);
+                AND(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -987,7 +987,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                AND(adress_16bit);
+                AND(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1037,7 +1037,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                ASL(adress_16bit);
+                ASL(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1046,7 +1046,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                ASL(adress_16bit);
+                ASL(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
 
@@ -1063,7 +1063,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                BIT(adress_16bit);
+                BIT(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
 
@@ -1132,7 +1132,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                CMP(adress_16bit);
+                CMP(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1141,7 +1141,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                CMP(adress_16bit);
+                CMP(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1150,7 +1150,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                CMP(adress_16bit);
+                CMP(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, x
@@ -1192,7 +1192,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                CPX(adress_16bit);
+                CPX(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -1214,7 +1214,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                CPY(adress_16bit);
+                CPY(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -1236,7 +1236,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                DEC(adress_16bit);
+                DEC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute,x
@@ -1245,7 +1245,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                DEC(adress_16bit);
+                DEC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -1274,7 +1274,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                EOR(adress_16bit);
+                EOR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1283,7 +1283,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                EOR(adress_16bit);
+                EOR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1292,7 +1292,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                EOR(adress_16bit);
+                EOR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1362,7 +1362,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                INC(adress_16bit);
+                INC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute,x
@@ -1371,7 +1371,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                INC(adress_16bit);
+                INC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -1381,7 +1381,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                JMP(adress_16bit);
+                JMP(adress_16bit + 0x4020);
                 //regPC += 3;
                 break;
             //indirect
@@ -1401,7 +1401,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                JSR(adress_16bit);
+                JSR(adress_16bit + 0x4020);
                 //regPC += 3;
                 break;
 
@@ -1430,7 +1430,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                LDA(memory[adress_16bit]); //todo
+                LDA(memory[adress_16bit + 0x4020]); 
                 regPC += 3;
                 break;
             //absolute, x
@@ -1439,7 +1439,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                LDA(memory[adress_16bit]);
+                LDA(memory[adress_16bit + 0x4020]);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1448,7 +1448,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                LDA(memory[adress_16bit]);
+                LDA(memory[adress_16bit + 0x4020]);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1497,7 +1497,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                LDX(adress_16bit);
+                LDX(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1506,7 +1506,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                LDX(adress_16bit);
+                LDX(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
 
@@ -1535,7 +1535,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                LDY(adress_16bit);
+                LDY(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1544,7 +1544,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                LDY(adress_16bit);
+                LDY(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -1574,7 +1574,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                LSR(adress_16bit);
+                LSR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1583,7 +1583,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                LSR(adress_16bit);
+                LSR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -1618,7 +1618,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                ORA(adress_16bit);
+                ORA(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1627,7 +1627,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                ORA(adress_16bit);
+                ORA(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1636,7 +1636,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                ORA(adress_16bit);
+                ORA(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1720,7 +1720,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                ROL(adress_16bit);
+                ROL(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1729,7 +1729,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                ROL(adress_16bit);
+                ROL(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
 
@@ -1759,7 +1759,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                ROR(adress_16bit);
+                ROR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1768,7 +1768,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                ROR(adress_16bit);
+                ROR(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
 
@@ -1808,7 +1808,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                SBC(adress_16bit);
+                SBC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1817,7 +1817,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                SBC(adress_16bit);
+                SBC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1826,7 +1826,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                SBC(adress_16bit);
+                SBC(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1864,14 +1864,14 @@ public:
                 regPC += 2;
                 break;
             //absolute
-            case 0x8d://todo
+            case 0x8d:
                 //6502 is little endian
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 //adress_16bit = *((short*)&memory[regPC + 1]);
 
-                STA(adress_16bit);
+                STA(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, x
@@ -1880,7 +1880,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regX;
-                STA(adress_16bit);
+                STA(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //absolute, y
@@ -1889,7 +1889,7 @@ public:
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
                 adress_16bit += regY;
-                STA(adress_16bit);
+                STA(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             //indirect, X
@@ -1958,7 +1958,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                STX(adress_16bit);
+                STX(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
 
@@ -1981,7 +1981,7 @@ public:
                 adress_16bit = memory[regPC + 2];
                 adress_16bit <<= 8;
                 adress_16bit += memory[regPC + 1];
-                STY(adress_16bit);
+                STY(adress_16bit + 0x4020);
                 regPC += 3;
                 break;
             
@@ -2003,7 +2003,7 @@ public:
             do_operation(op_code);
             printMemory(0x041f,0x0425);
             std::cout<<std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(750));
         }
     }
 
